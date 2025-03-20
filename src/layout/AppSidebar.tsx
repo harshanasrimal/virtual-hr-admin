@@ -14,9 +14,9 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
+  UserGroup
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
@@ -28,13 +28,16 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    name: "Overview",
+    path: "/",
   },
   {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
+    icon: <UserGroup />,
+    name: "Employee Management",
+    subItems: [
+      { name: "Add New", path: "/employee/new" },
+      { name: "Employees", path: "/employees"},
+    ],
   },
   {
     icon: <UserCircleIcon />,
@@ -308,14 +311,14 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/logo.png"
                 alt="Logo"
                 width={150}
                 height={40}
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/images/logo/logo-dark.png"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -323,10 +326,10 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src="/images/logo/logo-icon.png"
               alt="Logo"
-              width={32}
-              height={32}
+              width={38}
+              height={38}
             />
           )}
         </Link>
@@ -368,7 +371,6 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
       </div>
     </aside>
   );

@@ -1,0 +1,18 @@
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
+import PageMeta from "../../components/common/PageMeta";
+import EmployeesTable from "../../components/tables/EmployeesTable";
+
+export default function BasicTables() {
+  return (
+    <>
+      <PageMeta
+        title="Employees | Virtual HR Assistant"
+        description="Employees page of Virtual HR Assistant"
+      />
+      <PageBreadcrumb pageTitle="Employees" />
+      <div className="space-y-6">
+          <EmployeesTable />
+      </div>
+    </>
+  );
+}
