@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import NotFound from "./pages/OtherPage/NotFound";
+import SingleEmployee from "./pages/EmployeePages/SingleEmployee";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
@@ -30,6 +31,7 @@ export default function App() {
 
             {/* Employees */}
             <Route path="/employees" element={<Employees />} />
+            <Route path="/employee/:id" element={<SingleEmployee />} />
 
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />

@@ -7,15 +7,16 @@ import {
 } from "../ui/table";
 
 import Badge from "../ui/badge/Badge";
+import { Link } from "react-router";
 
-interface Order {
+interface Employee {
   id: number;
   user: {
     image: string;
     name: string;
     role: string;
   };
-  projectName: string;
+  email: string;
   team: {
     images: string[];
   };
@@ -24,7 +25,7 @@ interface Order {
 }
 
 // Define the table data using the interface
-const tableData: Order[] = [
+const tableData: Employee[] = [
   {
     id: 1,
     user: {
@@ -32,7 +33,7 @@ const tableData: Order[] = [
       name: "Lindsey Curtis",
       role: "Web Designer",
     },
-    projectName: "Agency Website",
+    email: "linda@builtapps.com",
     team: {
       images: [
         "/images/user/user-22.jpg",
@@ -50,7 +51,7 @@ const tableData: Order[] = [
       name: "Kaiya George",
       role: "Project Manager",
     },
-    projectName: "Technology",
+    email: "Technology",
     team: {
       images: ["/images/user/user-25.jpg", "/images/user/user-26.jpg"],
     },
@@ -64,7 +65,7 @@ const tableData: Order[] = [
       name: "Zain Geidt",
       role: "Content Writing",
     },
-    projectName: "Blog Writing",
+    email: "Blog Writing",
     team: {
       images: ["/images/user/user-27.jpg"],
     },
@@ -78,7 +79,7 @@ const tableData: Order[] = [
       name: "Abram Schleifer",
       role: "Digital Marketer",
     },
-    projectName: "Social Media",
+    email: "Social Media",
     team: {
       images: [
         "/images/user/user-28.jpg",
@@ -96,7 +97,7 @@ const tableData: Order[] = [
       name: "Carla George",
       role: "Front-end Developer",
     },
-    projectName: "Website",
+    email: "Website",
     team: {
       images: [
         "/images/user/user-31.jpg",
@@ -145,41 +146,41 @@ export default function BasicTableOne() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Budget
+                Actions
               </TableCell>
             </TableRow>
           </TableHeader>
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {tableData.map((order) => (
-              <TableRow key={order.id}>
+            {tableData.map((employee) => (
+              <TableRow key={employee.id}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
                         width={40}
                         height={40}
-                        src={order.user.image}
-                        alt={order.user.name}
+                        src={employee.user.image}
+                        alt={employee.user.name}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {order.user.name}
+                        {employee.user.name}
                       </span>
                       <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                        {order.user.role}
+                        {employee.user.role}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {order.projectName}
+                  {employee.email}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <div className="flex -space-x-2">
-                    {order.team.images.map((teamImage, index) => (
+                    {employee.team.images.map((teamImage, index) => (
                       <div
                         key={index}
                         className="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
@@ -199,18 +200,25 @@ export default function BasicTableOne() {
                   <Badge
                     size="sm"
                     color={
-                      order.status === "Active"
+                      employee.status === "Active"
                         ? "success"
-                        : order.status === "Pending"
+                        : employee.status === "Pending"
                         ? "warning"
                         : "error"
                     }
                   >
-                    {order.status}
+                    {employee.status}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {order.budget}
+                  <Link 
+                  to={`/employee/${employee.id}`}
+                  className="inline-block p-2 hover:bg-gray-100 rounded-full dark:hover:bg-white/10"
+                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}
