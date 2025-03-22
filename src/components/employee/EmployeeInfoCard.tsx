@@ -1,36 +1,96 @@
+import { ChangeEvent, useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 
+interface Employee {
+    id: number;
+    lName: string;
+    fName: string;
+    nic: string;
+    gender: string;
+    dob: Date;
+    joinedAt: Date;
+    email: string;
+    phone: string;
+    address?: string;
+    image: string;
+    designation: string;
+    status: string;
+    facebook?: string;
+    xcom?: string;
+    linkedin?: string;
+    instagram?: string;
+  }
+
 export default function EmployeeInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
+  const [employee, setEmployee] = useState({} as Employee);
+  const [formData, setFormData] = useState(employee);
+  
+  const handleEditChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+const handleSave = () => {
+      setEmployee(formData); // Apply changes
     // Handle save logic here
     console.log("Saving changes...");
     closeModal();
   };
+
+const openEditModal = () => {
+    setFormData(employee)
+    openModal();
+  };
+
+  useEffect(() => {
+    // Fetch employee data from API
+    // setEmployee(response.data);
+      setEmployee({
+        id: 1,
+        fName: "Lindsey",
+        lName: "Curtis",
+        nic: "199312345678",
+        gender:"male",
+        dob: new Date("1998-10-07"),
+        joinedAt: new Date("2017-9-07"),
+        image: "/images/user/user-17.jpg",
+        designation: "Web Designer",
+        email: "lindsey@builtapps.com",
+        phone: "+94 77 123 4567",
+        status: "Active",
+        facebook: "https://www.facebook.com/PimjoHQ",
+        xcom: "https://x.com/PimjoHQ",
+        linkedin: "https://www.linkedin.com/company/pimjo",
+        instagram: "https://instagram.com/PimjoHQ",
+        });
+  }, []);
+
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between mb-5">
           <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
             <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-              <img src="/images/user/owner.jpg" alt="user" />
+              <img src={employee.image} alt={employee.fName} />
             </div>
             <div className="order-3 xl:order-2">
               <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                Musharof Chowdhury
+                {employee.fName} {employee.lName}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Team Manager
+                    {employee.designation}
                 </p>
               </div>
             </div>
             <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
               <a
-                href="https://www.facebook.com/PimjoHQ"
+                href={employee.facebook}
                 target="_blank"
                 rel="noopener"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
@@ -51,7 +111,7 @@ export default function EmployeeInfoCard() {
               </a>
 
               <a
-                href="https://x.com/PimjoHQ"
+                href={employee.xcom}
                 target="_blank"
                 rel="noopener"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
@@ -72,7 +132,7 @@ export default function EmployeeInfoCard() {
               </a>
 
               <a
-                href="https://www.linkedin.com/company/pimjo"
+                href={employee.linkedin}
                 target="_blank"
                 rel="noopener"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
@@ -93,7 +153,7 @@ export default function EmployeeInfoCard() {
               </a>
 
               <a
-                href="https://instagram.com/PimjoHQ"
+                href={employee.instagram}
                 target="_blank"
                 rel="noopener"
                 className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
@@ -127,7 +187,7 @@ export default function EmployeeInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {employee.fName}
               </p>
             </div>
 
@@ -136,7 +196,7 @@ export default function EmployeeInfoCard() {
                 Last Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {employee.lName}
               </p>
             </div>
 
@@ -145,7 +205,7 @@ export default function EmployeeInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {employee.email}
               </p>
             </div>
 
@@ -154,14 +214,14 @@ export default function EmployeeInfoCard() {
                 Phone
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {employee.phone}
               </p>
             </div>
           </div>
         </div>
 
         <button
-          onClick={openModal}
+          onClick={openEditModal}
           className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
         >
           <svg
@@ -205,26 +265,30 @@ export default function EmployeeInfoCard() {
                     <Label>Facebook</Label>
                     <Input
                       type="text"
-                      value="https://www.facebook.com/PimjoHQ"
+                      value={formData.facebook}
+                      name="facebook"
+                      onChange={handleEditChange}
                     />
                   </div>
 
                   <div>
                     <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
+                    <Input type="text" value={formData.xcom} name="xcom" onChange={handleEditChange}/>
                   </div>
 
                   <div>
                     <Label>Linkedin</Label>
                     <Input
                       type="text"
-                      value="https://www.linkedin.com/company/pimjo"
+                      value={formData.linkedin}
+                      name="linkedin"
+                      onChange={handleEditChange}
                     />
                   </div>
 
                   <div>
                     <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
+                    <Input type="text" value={formData.instagram} name="instagram" onChange={handleEditChange} />
                   </div>
                 </div>
               </div>
@@ -236,27 +300,27 @@ export default function EmployeeInfoCard() {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
                     <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
+                    <Input type="text" value={formData.fName} name="fName" onChange={handleEditChange} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
+                    <Input type="text" value={formData.lName} name="lName" onChange={handleEditChange} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
+                    <Input type="text" value={formData.email} name="email" onChange={handleEditChange} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
+                    <Input type="text" value={formData.phone} name="phone" onChange={handleEditChange} />
                   </div>
 
                   <div className="col-span-2">
                     <Label>Designation</Label>
-                    <Input type="text" value="Team Manager" />
+                    <Input type="text" value={formData.designation} name="designation" onChange={handleEditChange} />
                   </div>
                 </div>
               </div>

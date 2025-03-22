@@ -10,10 +10,12 @@ import {
   ListIcon,
   PageIcon,
   PieChartIcon,
-  PlugInIcon,
   TableIcon,
   UserCircleIcon,
-  GroupIcon
+  GroupIcon,
+  DocsIcon,
+  SettingsIcon,
+  NotificationIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 
@@ -40,57 +42,55 @@ const navItems: NavItem[] = [
   },
   {
     icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
+    name: "Leave Management",
     subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
+      { name: "pending", path: "/leaves/pending" },
+      { name: "View All", path: "/leaves"},
+    ],
+  },
+  {
+    icon: <DocsIcon />,
+    name: "Documents",
+    subItems: [
+      { name: "requests", path: "/docs/requests" },
+      { name: "Templates", path: "/docs/templates"},
+    ],
+  },
+  {
+    icon: <PieChartIcon />,
+    name: "Reports & Analytics",
+    subItems: [
+      { name: "Leaves Trend", path: "/reports/leaves" },
+      { name: "Document Requests", path: "/reports/documents"},
     ],
   },
 ];
 
 const othersItems: NavItem[] = [
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
-  },
-  {
     icon: <BoxCubeIcon />,
     name: "UI Elements",
     subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
+      { name: "Form Elements", path: "/form-elements"},
+      { name: "Line Chart", path: "/line-chart"},
+      { name: "Bar Chart", path: "/bar-chart"},
+      { name: "Alerts", path: "/alerts"},
+      { name: "Avatar", path: "/avatars"},
+      { name: "Badge", path: "/badge"},
+      { name: "Buttons", path: "/buttons"},
+      { name: "Images", path: "/images"},
+      { name: "Videos", path: "/videos"},
     ],
   },
   {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
+    icon: <NotificationIcon />,
+    name: "Announcements",
+    path: "/announcements",
+  },
+  {
+    icon: <SettingsIcon />,
+    name: "Settings",
+    path: "/settings",
   },
 ];
 
