@@ -34,9 +34,8 @@ export default function EmployeeInfoCard() {
   const [employee, setEmployee] = useState({} as Employee);
   const [formData, setFormData] = useState(employee);
 
-  const handleEditChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleEditChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -429,6 +428,15 @@ export default function EmployeeInfoCard() {
                     />
                   </div>
                   <div className="col-span-2">
+                    <Label>Address</Label>
+                    <Input
+                      type="text"
+                      value={formData.address}
+                      name="address"
+                      onChange={handleEditChange}
+                    />
+                  </div>
+                  <div className="col-span-2">
                     <Label>Designation</Label>
                     <Input
                       type="text"
@@ -437,6 +445,20 @@ export default function EmployeeInfoCard() {
                       onChange={handleEditChange}
                     />
                   </div>
+                    <div className="col-span-2">
+                    <Label>Employment Type</Label>
+                    <select
+                      value={formData.employementType}
+                      name="employementType"
+                      onChange={(e) => handleEditChange(e)}
+                      className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:focus:border-brand-800"
+                    >
+                      <option value="Full Time">Full Time</option>
+                      <option value="Part Time">Part Time</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Internship">Internship</option>
+                    </select>
+                    </div>
                 </div>
               </div>
             </div>
