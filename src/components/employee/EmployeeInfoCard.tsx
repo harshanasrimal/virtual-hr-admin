@@ -27,6 +27,10 @@ interface Employee {
   xcom?: string;
   linkedin?: string;
   instagram?: string;
+  totalAnnualLeave: number;
+  remainingAnnualLeave: number;
+  totalCasualLeave: number;
+  remainingCasualLeave: number;
 }
 
 export default function EmployeeInfoCard() {
@@ -84,6 +88,10 @@ export default function EmployeeInfoCard() {
       xcom: "https://x.com/PimjoHQ",
       linkedin: "https://www.linkedin.com/company/pimjo",
       instagram: "https://instagram.com/PimjoHQ",
+      totalAnnualLeave: 14,
+      remainingAnnualLeave: 4,
+      totalCasualLeave: 7,
+      remainingCasualLeave: 3,
     });
   }, []);
 
@@ -246,6 +254,39 @@ export default function EmployeeInfoCard() {
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {employee.address}
+              </p>
+            </div>
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Joined Date
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {new Date(employee.joinedAt).toLocaleDateString()}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Employee Number
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {employee.id}
+              </p>
+            </div>
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Annual Leaves
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {employee.remainingAnnualLeave} / {employee.totalAnnualLeave}
+              </p>
+            </div>
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Casual Leaves
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {employee.remainingCasualLeave} / {employee.totalCasualLeave}
               </p>
             </div>
           </div>

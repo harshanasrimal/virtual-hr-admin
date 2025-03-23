@@ -2,7 +2,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import EmployeesTable from "../../components/employee/EmployeesTable";
 
-export default function BasicTables() {
+export default function Employees() {
   return (
     <>
       <PageMeta
