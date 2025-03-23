@@ -44,7 +44,7 @@ const navItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: "Leave Management",
     subItems: [
-      { name: "pending", path: "/leaves/pending" },
+      { name: "pending", path: "/leaves?type=pending" },
       { name: "View All", path: "/leaves"},
     ],
   },
@@ -67,21 +67,6 @@ const navItems: NavItem[] = [
 ];
 
 const othersItems: NavItem[] = [
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Form Elements", path: "/form-elements"},
-      { name: "Line Chart", path: "/line-chart"},
-      { name: "Bar Chart", path: "/bar-chart"},
-      { name: "Alerts", path: "/alerts"},
-      { name: "Avatar", path: "/avatars"},
-      { name: "Badge", path: "/badge"},
-      { name: "Buttons", path: "/buttons"},
-      { name: "Images", path: "/images"},
-      { name: "Videos", path: "/videos"},
-    ],
-  },
   {
     icon: <NotificationIcon />,
     name: "Announcements",
