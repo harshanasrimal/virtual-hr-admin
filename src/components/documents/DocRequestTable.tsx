@@ -11,41 +11,40 @@ import { useModal } from "../../hooks/useModal";
 import Badge from "../ui/badge/Badge";
 import { useState } from "react";
 import Button from "../ui/button/Button";
+import DropDocumentZone from "./DropDocumentDone";
 
-interface LeaveRequest {
+interface DocumentRequest {
   id: number;
   employeeName: string;
   employeeImage: string;
   createdAt: Date;
-  from: Date;
-  to: Date;
-  type: "Annual" | "Casual" | "Sick";
+  type: string;
   reason: string;
+  addressTo: string;
   note?: string;
-  status: "Approved" | "Pending" | "Canceled" | "Rejected";
+  status: "Delivered" | "Pending" | "Canceled" | "Rejected";
 }
 
 // Define the table data using the interface
-const tableData: LeaveRequest[] = [
+const tableData: DocumentRequest[] = [
   {
     id: 1,
     employeeName: "Lindsey Curtis",
     employeeImage: "/images/user/user-17.jpg",
-    createdAt: new Date("2025-09-01"),
-    from: new Date("2025-09-01"),
-    to: new Date("2025-09-01"),
-    type: "Annual",
-    reason: "Family Vacation",
+    createdAt: new Date("2025-03-01"),
+    type: "Job Confirmation",
+    reason: "to Apply for a loan",
+    addressTo: "DFCC Bank",
     status: "Pending",
   },
 ];
 
 export default function DocRequestTable() {
-  const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<DocumentRequest | null>(null);
   const { isOpen, openModal, closeModal } = useModal();
 
-  const openLeaveModal = (key: number) => {
-    setSelectedLeave(tableData[key]);
+  const openRequestModal = (key: number) => {
+    setSelectedRequest(tableData[key]);
     openModal();
   };
 
@@ -76,6 +75,12 @@ export default function DocRequestTable() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
+                Type
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
                 Status
               </TableCell>
               <TableCell
@@ -89,47 +94,50 @@ export default function DocRequestTable() {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {tableData.map((leave, key) => (
-              <TableRow key={leave.id}>
+            {tableData.map((request, key) => (
+              <TableRow key={request.id}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
                       <img
                         width={40}
                         height={40}
-                        src={leave.employeeImage}
-                        alt={leave.employeeName}
+                        src={request.employeeImage}
+                        alt={request.employeeName}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {leave.employeeName}
+                        {request.employeeName}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {new Date(leave.from).toLocaleDateString()} - {new Date(leave.to).toLocaleDateString()}
+                  {new Date(request.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {request.type}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      leave.status === "Approved"
+                      request.status === "Delivered"
                         ? "success"
-                        : leave.status === "Pending"
+                        : request.status === "Pending"
                         ? "warning"
-                        : leave.status === "Canceled"
+                        : request.status === "Canceled"
                         ? "light"
                         : "error"
                     }
                   >
-                    {leave.status}
+                    {request.status}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   <button
-                    onClick={() => openLeaveModal(key)}
+                    onClick={() => openRequestModal(key)}
                     className="inline-block p-2 hover:bg-gray-100 rounded-full dark:hover:bg-white/10"
                   >
                     <svg
@@ -156,40 +164,115 @@ export default function DocRequestTable() {
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14 mb-8">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Leave Request
-            </h4>
+        <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+          Document Request Details
+        </h4>
           </div>
           <div className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-                <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-                  <img
-                    src={selectedLeave?.employeeImage}
-                    alt={selectedLeave?.employeeName}
-                  />
-                </div>
-                <div className="order-3 xl:order-2">
-                  <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                    {selectedLeave?.employeeName}
-                  </h4>
-                  <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-                    <p className="text-sm text-gray-500 dark:text-gray-400"></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
-                Close
-              </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Modal>
+  <div className="custom-scrollbar overflow-y-auto px-2 pb-3">
+    {/* Employee Info */}
+    <div className="flex items-center gap-4 mb-6">
+      <div className="w-16 h-16 overflow-hidden rounded-full">
+        <img
+          src={selectedRequest?.employeeImage}
+          alt={selectedRequest?.employeeName}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div>
+        <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          {selectedRequest?.employeeName}
+        </h4>
+        <Badge
+          size="sm"
+          color={
+            selectedRequest?.status === "Delivered"
+              ? "success"
+              : selectedRequest?.status === "Pending"
+              ? "warning"
+              : selectedRequest?.status === "Canceled"
+              ? "light"
+              : "error"
+          }
+        >
+          {selectedRequest?.status}
+        </Badge>
+      </div>
     </div>
+
+    {/* Request Details */}
+    <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Request Type</p>
+        <p className="font-medium dark:text-white">{selectedRequest?.type}</p>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Date Requested</p>
+        <p className="font-medium dark:text-white">
+          {selectedRequest?.createdAt.toLocaleDateString()}
+        </p>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Address To</p>
+        <p className="font-medium dark:text-white">{selectedRequest?.addressTo}</p>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Reason</p>
+        <p className="font-medium dark:text-white">{selectedRequest?.reason}</p>
+      </div>
+      {selectedRequest?.note && (
+        <div className="col-span-2 space-y-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Additional Notes</p>
+          <p className="font-medium dark:text-white">{selectedRequest?.note}</p>
+        </div>
+      )}
+    </div>
+
+    {/* Divider */}
+    <div className="my-6 border-t border-gray-200 dark:border-white/[0.05]"></div>
+
+    {/* Status Update */}
+    <div className="mb-4 space-y-1">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Request Status
+      </label>
+      <select
+        className="w-full mt-1 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white text-sm focus:border-primary focus:ring-primary"
+        defaultValue={selectedRequest?.status}
+        onChange={(e) => {
+          if (selectedRequest) {
+            setSelectedRequest({ ...selectedRequest, status: e.target.value as DocumentRequest["status"] });
+          }
+        }}
+      >
+        <option value="Pending">Pending</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Canceled">Canceled</option>
+      </select>
+    </div>
+
+    {/* File Upload */}
+    <div className="mb-6 space-y-1">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+        Generated Document
+      </label>
+      <DropDocumentZone onFileSelect={(file) => console.log("Uploaded:", file.name)} />
+    </div>
+  </div>
+
+  {/* Modal Footer */}
+  <div className="flex items-center gap-3 px-2 mt-6 justify-end">
+    <Button size="sm" variant="outline" onClick={closeModal}>
+      Close
+    </Button>
+    <Button size="sm" onClick={handleSave}>
+      Update
+    </Button>
+  </div>
+</div>
+
+        </div>
+      </Modal></div>
   );
 }
