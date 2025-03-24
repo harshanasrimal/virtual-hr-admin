@@ -9,9 +9,11 @@ import { Modal } from "../ui/modal";
 import { useModal } from "../../hooks/useModal";
 
 import Badge from "../ui/badge/Badge";
-import { Link } from "react-router";
 import { useState } from "react";
 import Button from "../ui/button/Button";
+import Label from "../form/Label";
+import TextArea from "../form/input/TextArea";
+import Select from "../form/Select";
 
 interface LeaveRequest {
   id: number;
@@ -44,6 +46,13 @@ const tableData: LeaveRequest[] = [
 export default function LeavesTable() {
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
   const { isOpen, openModal, closeModal } = useModal();
+
+  const leaveStatusOptions = [
+    { value: "Pending", label: "Pending" },
+    { value: "Approved", label: "Approved" },
+    { value: "Rejected", label: "Rejected" },
+    { value: "Canceled", label: "Canceled" },
+  ];
 
   const openLeaveModal = (key: number) => {
     setSelectedLeave(tableData[key]);
@@ -155,41 +164,115 @@ export default function LeavesTable() {
         </Table>
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14 mb-8">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Leave Request
-            </h4>
-          </div>
-          <div className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-                <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-                  <img
-                    src={selectedLeave?.employeeImage}
-                    alt={selectedLeave?.employeeName}
-                  />
-                </div>
-                <div className="order-3 xl:order-2">
-                  <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                    {selectedLeave?.employeeName}
-                  </h4>
-                  <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-                    <p className="text-sm text-gray-500 dark:text-gray-400"></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
-                Close
-              </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save Changes
-              </Button>
-            </div>
-          </div>
+      <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+  <div className="px-2 pr-14 mb-8">
+    <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+      Leave Request Details
+    </h4>
+  </div>
+
+  <div className="custom-scrollbar overflow-y-auto px-2 pb-3">
+    {/* Employee Info */}
+    <div className="flex items-center gap-4 mb-6">
+      <div className="w-16 h-16 overflow-hidden rounded-full">
+        <img
+          src={selectedLeave?.employeeImage}
+          alt={selectedLeave?.employeeName}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div>
+        <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          {selectedLeave?.employeeName}
+        </h4>
+        <Badge
+          size="sm"
+          color={
+            selectedLeave?.status === "Approved"
+              ? "success"
+              : selectedLeave?.status === "Pending"
+              ? "warning"
+              : selectedLeave?.status === "Canceled"
+              ? "light"
+              : "error"
+          }
+        >
+          {selectedLeave?.status}
+        </Badge>
+      </div>
+    </div>
+
+    {/* Leave Details */}
+    <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Leave Type</p>
+        <p className="font-medium dark:text-white">{selectedLeave?.type}</p>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Requested On</p>
+        <p className="font-medium dark:text-white">
+          {selectedLeave?.createdAt.toLocaleDateString()}
+        </p>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">From</p>
+        <p className="font-medium dark:text-white">
+          {selectedLeave?.from.toLocaleDateString()}
+        </p>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">To</p>
+        <p className="font-medium dark:text-white">
+          {selectedLeave?.to.toLocaleDateString()}
+        </p>
+      </div>
+      <div className="col-span-2 space-y-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Reason</p>
+        <p className="font-medium dark:text-white">{selectedLeave?.reason}</p>
+      </div>
+      {selectedLeave?.note && (
+        <div className="col-span-2 space-y-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Note</p>
+          <p className="font-medium dark:text-white">{selectedLeave?.note}</p>
         </div>
+      )}
+    </div>
+
+    {/* Divider */}
+    <div className="my-6 border-t border-gray-200 dark:border-white/[0.05]"></div>
+
+    {/* Status Update */}
+    <div className="mb-4 space-y-1">
+      <Label> Update Leave Status</Label>
+      <Select
+            options={leaveStatusOptions}
+            defaultValue={selectedLeave?.status}
+            placeholder="Select Option"
+            onChange={() => {}}
+            className="dark:bg-dark-900"
+          />
+    </div>
+    <div>
+          <Label>Special Note</Label>
+          <TextArea
+            value={selectedLeave?.note}
+            onChange={(value) => console.log(value)}
+            rows={6}
+          />
+        </div>
+  </div>
+
+  {/* Footer Buttons */}
+  <div className="flex items-center gap-3 px-2 mt-6 justify-end">
+    <Button size="sm" variant="outline" onClick={closeModal}>
+      Close
+    </Button>
+    <Button size="sm" onClick={handleSave}>
+      Save Changes
+    </Button>
+  </div>
+</div>
+
       </Modal>
     </div>
   );

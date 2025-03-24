@@ -2,6 +2,7 @@
   "name": "virtual-hr-admin",
   "private": true,
   "version": "1.0.0",
+  "author": "Harshana Srimal <harshana@builtapps.com> (https://harshanasrimal.com)",
   "type": "module",
   "scripts": {
     "dev": "vite",

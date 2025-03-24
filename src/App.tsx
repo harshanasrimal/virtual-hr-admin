@@ -19,6 +19,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import AddEmployee from "./pages/EmployeePages/AddEmployee";
 import Leaves from "./pages/LeavePages/Leaves";
+import DocRequests from "./pages/DocumentPages/DocRequests";
 
 export default function App() {
   return (
@@ -37,6 +38,10 @@ export default function App() {
 
             {/* Leaves */}
             <Route path="/leaves" element={<Leaves />} />
+
+            {/* Document Requests */}
+            <Route path="/docs/requests" element={<DocRequests />} />
+
 
             {/* Others Page */}
             <Route path="/calendar" element={<Calendar />} />

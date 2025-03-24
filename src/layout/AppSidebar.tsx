@@ -43,10 +43,7 @@ const navItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
     name: "Leave Management",
-    subItems: [
-      { name: "pending", path: "/leaves?type=pending" },
-      { name: "View All", path: "/leaves"},
-    ],
+    path: "/leaves"
   },
   {
     icon: <DocsIcon />,
