@@ -2,12 +2,10 @@ import { ChangeEvent, useState } from "react";
 import ComponentCard from "../common/ComponentCard";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Select from "../form/Select";
-import { CalenderIcon, EyeCloseIcon, EyeIcon, TimeIcon } from "../../icons";
+import { CalenderIcon } from "../../icons";
 import Flatpickr from "react-flatpickr";
 import Button from "../ui/button/Button";
 import Radio from "../form/input/Radio";
-import { preventDefault } from "@fullcalendar/core/internal";
 
 interface Employee {
   id: number;

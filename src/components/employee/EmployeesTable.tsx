@@ -115,8 +115,6 @@ export default function EmployeesTable() {
                     color={
                       employee.status === "Active"
                         ? "success"
-                        : employee.status === "Pending"
-                        ? "warning"
                         : "error"
                     }
                   >

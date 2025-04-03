@@ -9,6 +9,10 @@ import Button from "../ui/button/Button";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
+  const login = () => {
+    console.log("Logging in...");
+  };
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -80,7 +84,7 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
+                  <Button className="w-full" size="sm" onClick={login}>
                     Sign in
                   </Button>
                 </div>
