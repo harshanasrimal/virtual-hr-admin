@@ -9,59 +9,72 @@ import { Modal } from "../ui/modal";
 import { useModal } from "../../hooks/useModal";
 
 import Badge from "../ui/badge/Badge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../ui/button/Button";
 import Label from "../form/Label";
 import TextArea from "../form/input/TextArea";
 import Select from "../form/Select";
 
-interface LeaveRequest {
-  id: number;
-  employeeName: string;
-  employeeImage: string;
-  createdAt: Date;
-  from: Date;
-  to: Date;
-  type: "Annual" | "Casual" | "Sick";
-  reason: string;
-  note?: string;
-  status: "Approved" | "Pending" | "Canceled" | "Rejected";
-}
+import { fetchAllLeaves, updateLeaveStatus } from '../../services/leaveService';
 
-// Define the table data using the interface
-const tableData: LeaveRequest[] = [
-  {
-    id: 1,
-    employeeName: "Lindsey Curtis",
-    employeeImage: "/images/user/user-17.jpg",
-    createdAt: new Date("2025-09-01"),
-    from: new Date("2025-09-01"),
-    to: new Date("2025-09-01"),
-    type: "Annual",
-    reason: "Family Vacation",
-    status: "Pending",
+Object.defineProperty(String.prototype, 'capitalize', {
+  value: function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
   },
-];
+  enumerable: false
+});
 
 export default function LeavesTable() {
-  const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
+  const [leaves, setLeaves] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedLeave, setSelectedLeave] = useState<any>(null);
   const { isOpen, openModal, closeModal } = useModal();
+  const [leaveStatus, setLeaveStatus] = useState<string>("");
+  const [note, setNote] = useState<string>("");
 
   const leaveStatusOptions = [
-    { value: "Pending", label: "Pending" },
-    { value: "Approved", label: "Approved" },
-    { value: "Rejected", label: "Rejected" },
-    { value: "Canceled", label: "Canceled" },
+    { value: "PENDING", label: "Pending" },
+    { value: "APPROVED", label: "Approved" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CANCELED", label: "Canceled" },
   ];
 
   const openLeaveModal = (key: number) => {
-    setSelectedLeave(tableData[key]);
+    setSelectedLeave(leaves[key]);
     openModal();
   };
 
-  const handleSave = () => {
+  const handleSave = async() => {
+    try {
+      await updateLeaveStatus(selectedLeave.id, leaveStatus, note);
+      fetchAllLeaves()
+      .then(setLeaves)
+      setSelectedLeave(null);
+      setLeaveStatus("");
+      setNote("");
+      alert(`Leave updated successfully!`);
+      // optionally refresh list here
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update leave status.');
+    }
     closeModal();
   };
+
+  useEffect(() => {
+    fetchAllLeaves()
+      .then(setLeaves)
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (selectedLeave) {
+      setLeaveStatus(selectedLeave.status);
+      setNote(selectedLeave.note || "");
+    }
+  }, [selectedLeave]);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -99,7 +112,7 @@ export default function LeavesTable() {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {tableData.map((leave, key) => (
+            {leaves.map((leave:any, key) => (
               <TableRow key={leave.id}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
@@ -107,34 +120,34 @@ export default function LeavesTable() {
                       <img
                         width={40}
                         height={40}
-                        src={leave.employeeImage}
-                        alt={leave.employeeName}
+                        src={leave.user.image}
+                        alt={leave.user.profile.firstName}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {leave.employeeName}
+                        {leave.user.profile.firstName} {leave.user.profile.lastName}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {new Date(leave.from).toLocaleDateString()} - {new Date(leave.to).toLocaleDateString()}
+                  {new Date(leave.fromDate).toLocaleDateString()} - {new Date(leave.toDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      leave.status === "Approved"
+                      leave.status === "APPROVED"
                         ? "success"
-                        : leave.status === "Pending"
+                        : leave.status === "PENDING"
                         ? "warning"
-                        : leave.status === "Canceled"
+                        : leave.status === "CANCELED"
                         ? "light"
                         : "error"
                     }
                   >
-                    {leave.status}
+                    {leave.status.toLowerCase().capitalize()}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
@@ -176,28 +189,28 @@ export default function LeavesTable() {
     <div className="flex items-center gap-4 mb-6">
       <div className="w-16 h-16 overflow-hidden rounded-full">
         <img
-          src={selectedLeave?.employeeImage}
-          alt={selectedLeave?.employeeName}
+          src={selectedLeave?.user.image}
+          alt={selectedLeave?.user.profile.firstName}
           className="w-full h-full object-cover"
         />
       </div>
       <div>
         <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          {selectedLeave?.employeeName}
+          {selectedLeave?.user.profile.firstName} {selectedLeave?.user.profile.lastName}
         </h4>
         <Badge
           size="sm"
           color={
-            selectedLeave?.status === "Approved"
+            selectedLeave?.status === "APPROVED"
               ? "success"
-              : selectedLeave?.status === "Pending"
+              : selectedLeave?.status === "PENDING"
               ? "warning"
-              : selectedLeave?.status === "Canceled"
+              : selectedLeave?.status === "CANCELED"
               ? "light"
               : "error"
           }
         >
-          {selectedLeave?.status}
+          {selectedLeave?.status.toLowerCase().capitalize()}
         </Badge>
       </div>
     </div>
@@ -211,19 +224,19 @@ export default function LeavesTable() {
       <div className="space-y-1">
         <p className="text-sm text-gray-500 dark:text-gray-400">Requested On</p>
         <p className="font-medium dark:text-white">
-          {selectedLeave?.createdAt.toLocaleDateString()}
+           {new Date(selectedLeave?.createdAt).toLocaleDateString()}
         </p>
       </div>
       <div className="space-y-1">
         <p className="text-sm text-gray-500 dark:text-gray-400">From</p>
         <p className="font-medium dark:text-white">
-          {selectedLeave?.from.toLocaleDateString()}
+        {new Date(selectedLeave?.fromDate).toLocaleDateString()}
         </p>
       </div>
       <div className="space-y-1">
         <p className="text-sm text-gray-500 dark:text-gray-400">To</p>
         <p className="font-medium dark:text-white">
-          {selectedLeave?.to.toLocaleDateString()}
+        {new Date(selectedLeave?.toDate).toLocaleDateString()}
         </p>
       </div>
       <div className="col-span-2 space-y-1">
@@ -248,15 +261,16 @@ export default function LeavesTable() {
             options={leaveStatusOptions}
             defaultValue={selectedLeave?.status}
             placeholder="Select Option"
-            onChange={() => {}}
+            onChange={(value) => setLeaveStatus(value)}
             className="dark:bg-dark-900"
           />
     </div>
     <div>
           <Label>Special Note</Label>
           <TextArea
-            value={selectedLeave?.note}
-            onChange={(value) => console.log(value)}
+            value={note}
+            placeholder="Add a note..."
+            onChange={(value) => setNote(value)}
             rows={6}
           />
         </div>
