@@ -20,6 +20,7 @@ import Home from "./pages/Dashboard/Home";
 import AddEmployee from "./pages/EmployeePages/AddEmployee";
 import Leaves from "./pages/LeavePages/Leaves";
 import DocRequests from "./pages/DocumentPages/DocRequests";
+import PrivateRoute from "./components/PrivateRoute";
 
 export default function App() {
   return (
@@ -27,8 +28,8 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <Routes>
-          {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
+          {/* Dashboard Layout with Auth */}
+          <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
             <Route index path="/" element={<Home />} />
 
             {/* Employees */}

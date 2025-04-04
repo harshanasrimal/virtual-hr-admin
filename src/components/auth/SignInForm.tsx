@@ -1,18 +1,44 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
+import { loginAdmin } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 export default function SignInForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
 
-  const login = () => {
-    console.log("Logging in...");
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isChecked, setIsChecked] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    setIsLoading(true);
+    setError('');
+    e.preventDefault();
+    try {
+      const { access_token, user } = await loginAdmin(email, password);
+      if(user?.role !== 'HR') {
+        setError('You are not authorized to access this application.');
+        setIsLoading(false);
+        return;
+      }
+      login(access_token, user);
+      navigate('/');
+    } catch (err: any) {
+      setError(err?.response?.data?.message?.message || 'Login failed.');
+    }
+    setIsLoading(false);
   };
+
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -40,13 +66,17 @@ export default function SignInForm() {
             </p>
           </div>
           <div>
-            <form>
+            <form onSubmit={handleLogin} >
               <div className="space-y-6">
+              {error && <p className="text-red-500 mb-4">{error}</p>}
                 <div>
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" />
+                  <Input
+                   placeholder="info@virtualhr.com"
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div>
                   <Label>
@@ -56,6 +86,8 @@ export default function SignInForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -84,8 +116,20 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm" onClick={login}>
-                    Sign in
+                  <Button className="w-full" size="sm" disabled={isLoading}>
+                    {isLoading && (
+                      <svg
+                        className="w-4 h-4 mr-3 text-white animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M12 2a10 10 0 1 0 0 20A10 10 0 1 0 12 2Zm0 18a8 8 0 1 1 0-16a8 8 0 1 1 0 16Z"
+                        />
+                      </svg>
+                    )}
+                    {isLoading ? "Signing in..." : "Sign in"}
                   </Button>
                 </div>
               </div>
