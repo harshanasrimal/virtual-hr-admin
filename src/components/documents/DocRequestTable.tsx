@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import Button from "../ui/button/Button";
 import DropDocumentZone from "./DropDocumentZone";
 import { getAllDocumentRequests, updateDocumentStatus } from "../../services/documentService";
+import Loader from "../common/Loader";
 
 
 export default function DocRequestTable() {
@@ -69,7 +70,7 @@ export default function DocRequestTable() {
     });
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">

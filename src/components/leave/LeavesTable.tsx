@@ -16,6 +16,7 @@ import TextArea from "../form/input/TextArea";
 import Select from "../form/Select";
 
 import { fetchAllLeaves, updateLeaveStatus } from '../../services/leaveService';
+import Loader from "../common/Loader";
 
 Object.defineProperty(String.prototype, 'capitalize', {
   value: function() {
@@ -74,7 +75,7 @@ export default function LeavesTable() {
     }
   }, [selectedLeave]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
