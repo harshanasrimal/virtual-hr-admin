@@ -1,6 +1,5 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
-import AddEmployeeCard from "../../components/employee/AddEmployeeCard";
 
 export default function SendAnnouncement() {
   return (
@@ -10,7 +9,6 @@ export default function SendAnnouncement() {
         description="send announcements to employees"
       />
       <PageBreadcrumb pageTitle="Send Announcements" />
-      {/* <AddEmployeeCard /> */}
     </>
   );
 }

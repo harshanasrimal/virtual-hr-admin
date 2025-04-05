@@ -19,17 +19,6 @@ import { getRecentDocumentRequests } from "../../services/dashboardService";
     status: "Delivered" | "Pending" | "Canceled";
   }
   
-  // Define the table data using the interface
-  const tableData: DocRequest[] = [
-    {
-      id: 1,
-      employeeName: "Lindsey Curtis",
-      subject: "Job Confirmation Letter",
-      requestDate: new Date("2025-03-01"),
-      employeeImage: "/images/user/user-17.jpg",
-      status: "Pending",
-    },
-  ];
   
   export default function PendingDocuments() {
     const [documents, setDocuments] = useState<DocRequest[]>([]);
