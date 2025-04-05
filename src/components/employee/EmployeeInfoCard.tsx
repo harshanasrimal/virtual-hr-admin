@@ -6,7 +6,7 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { CalenderIcon } from "../../icons";
-import { getEmployeeById, updateEmployee } from "../../services/employeeService";
+import { getEmployeeById, updateEmployee, updateProfilePicture } from "../../services/employeeService";
 import { useParams } from "react-router";
 
 interface Employee {
@@ -65,6 +65,24 @@ export default function EmployeeInfoCard() {
     }
   };
 
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !id) return;
+  
+    try {
+      const response = await updateProfilePicture(id, file);
+      const updatedImage = response.image;
+  
+      setEmployee((prev: Employee) => ({
+        ...prev,
+        image: updatedImage,
+      }));
+    } catch (err) {
+      console.error("Image upload failed:", err);
+    }
+  };
+  
+
   const openEditModal = () => {
     setFormData(employee);
     openModal();
@@ -94,21 +112,44 @@ export default function EmployeeInfoCard() {
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between mb-5">
-        <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-          <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-            <img src={employee.image} alt={employee.firstName} />
-          </div>
-          <div className="order-3 xl:order-2">
-            <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-              {employee.firstName} {employee.lastName}
-            </h4>
-            <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {employee.designation}
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
+  <div className="relative text-center">
+    <div
+      className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 cursor-pointer"
+      onClick={() => document.getElementById("profileImageInput")?.click()}
+    >
+      <img
+        src={employee.image}
+        alt={employee.firstName}
+        className="w-full h-full object-cover"
+      />
+    </div>
+    <p
+      className="text-xs text-blue-600 cursor-pointer mt-1"
+      onClick={() => document.getElementById("profileImageInput")?.click()}
+    >
+      Edit
+    </p>
+    <input
+      type="file"
+      id="profileImageInput"
+      accept="image/*"
+      className="hidden"
+      onChange={handleImageUpload}
+    />
+  </div>
+  <div className="order-3 xl:order-2">
+    <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
+      {employee.firstName} {employee.lastName}
+    </h4>
+    <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        {employee.designation}
+      </p>
+    </div>
+  </div>
+</div>
+
       </div>
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
