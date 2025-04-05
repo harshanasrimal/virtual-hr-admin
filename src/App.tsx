@@ -2,18 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import NotFound from "./pages/OtherPage/NotFound";
 import SingleEmployee from "./pages/EmployeePages/SingleEmployee";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
-import Calendar from "./pages/Calendar";
 import Employees from "./pages/EmployeePages/Employees";
-import FormElements from "./pages/Forms/FormElements";
-import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
@@ -21,6 +10,8 @@ import AddEmployee from "./pages/EmployeePages/AddEmployee";
 import Leaves from "./pages/LeavePages/Leaves";
 import DocRequests from "./pages/DocumentPages/DocRequests";
 import PrivateRoute from "./components/PrivateRoute";
+import ComingSoon from "./pages/OtherPage/ComingSoon";
+import SendAnnouncement from "./pages/Announcements/SendAnnouncement";
 
 export default function App() {
   return (
@@ -42,27 +33,18 @@ export default function App() {
 
             {/* Document Requests */}
             <Route path="/docs/requests" element={<DocRequests />} />
+            <Route path="/docs/templates" element={<ComingSoon />} />
 
+            {/* reports */}
+            <Route path="/reports/leaves" element={<ComingSoon />} />
+            <Route path="/reports/documents" element={<ComingSoon />} />
 
-            {/* Others Page */}
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/blank" element={<Blank />} />
+            {/* settings */}
+            <Route path="/settings" element={<ComingSoon />} />
 
-            {/* Forms */}
-            <Route path="/form-elements" element={<FormElements />} />
+            {/* announcements */}
+            <Route path="/announcements" element={<SendAnnouncement />} />
 
-
-            {/* Ui Elements */}
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} />
-
-            {/* Charts */}
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
           </Route>
 
           {/* Auth Layout */}

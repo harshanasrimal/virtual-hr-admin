@@ -1,9 +1,24 @@
+import { useEffect, useState } from "react";
 import {
     DocsIcon,
     GroupIcon,
   } from "../../icons";
+import { getPendingDocumentCount, getPendingLeaveCount } from "../../services/dashboardService";
   
   export default function RequestsMetrics() {
+    const [pendingLeaves, setPendingLeaves] = useState(0);
+    const [pendingDocs, setPendingDocs] = useState(0);
+
+    useEffect(() => {
+      getPendingLeaveCount()
+        .then(setPendingLeaves)
+        .catch(console.error);
+  
+      getPendingDocumentCount()
+        .then(setPendingDocs)
+        .catch(console.error);
+    }, []);
+
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
         {/* <!-- Metric Item Start --> */}
@@ -18,7 +33,7 @@ import {
                 Pending Leave Requests
               </span>
               <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-                3
+              {pendingLeaves}
               </h4>
             </div>
           </div>
@@ -36,7 +51,7 @@ import {
                 Pending Document Requests
               </span>
               <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-                5
+              {pendingDocs}
               </h4>
             </div>
           </div>

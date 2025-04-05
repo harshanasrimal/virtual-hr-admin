@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ComponentCard from "../common/ComponentCard";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
@@ -6,58 +7,40 @@ import { CalenderIcon } from "../../icons";
 import Flatpickr from "react-flatpickr";
 import Button from "../ui/button/Button";
 import Radio from "../form/input/Radio";
+import { createEmployee } from "../../services/employeeService";
 
 interface Employee {
-  id: number;
   lName: string;
   fName: string;
   nic: string;
   gender: string;
-  dob: Date;
   joinedAt: Date;
   email: string;
   phone: string;
   address?: string;
   image: string;
   designation: string;
-  employementType: "Full Time" | "Part Time" | "Contract" | "Internship";
-  status: string;
-  facebook?: string;
-  xcom?: string;
-  linkedin?: string;
-  instagram?: string;
-  totalAnnualLeave: number;
-  remainingAnnualLeave: number;
-  totalCasualLeave: number;
-  remainingCasualLeave: number;
 }
 
 export default function AddEmployeeCard() {
   const emptyEmployee: Employee = {
-    id: 0,
     lName: "",
     fName: "",
     nic: "",
     gender: "",
-    dob: new Date(),
     joinedAt: new Date(),
     email: "",
     phone: "",
     address: "",
     image: "",
     designation: "",
-    employementType: "Full Time",
-    status: "",
-    facebook: "",
-    xcom: "",
-    linkedin: "",
-    instagram: "",
-    totalAnnualLeave: 0,
-    remainingAnnualLeave: 0,
-    totalCasualLeave: 0,
-    remainingCasualLeave: 0,
   };
   const [formData, setFormData] = useState(emptyEmployee);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+
   const handleEditChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -78,9 +61,34 @@ export default function AddEmployeeCard() {
   };
 
 
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
+  const handleSave = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const payload = {
+        email: formData.email,
+        phone: formData.phone || undefined,
+        firstName: formData.fName,
+        lastName: formData.lName,
+        nic: formData.nic,
+        joinedDate: formData.joinedAt.toISOString(), // Must be ISO string
+        designation: formData.designation,
+        jobDescription: "N/A",
+        address: formData.address || undefined,
+      };
+  
+      await createEmployee(payload);
+      setFormData(emptyEmployee);
+      navigate("/employees");
+    } catch (err:any) {
+      const errorMessage = err.response?.data?.message.message;
+      if(errorMessage instanceof Array) {
+        setError(errorMessage[0]);
+      } else {
+        setError(errorMessage);
+      }
+    }
+    setLoading(false);
   };
   return (
     <ComponentCard title="Employee Details ">
@@ -132,24 +140,6 @@ export default function AddEmployeeCard() {
                     onChange={handleEditChange}
                   />
                 </div>
-
-                <div className="col-span-2 lg:col-span-1">
-                  <Label>Date of Birth</Label>
-                  <div className="relative w-full flatpickr-wrapper">
-                    <Flatpickr
-                      value={formData.dob} // Set the value to the state
-                      onChange={(date) => handleDateChange("dob", date)} // Handle the date change
-                      options={{
-                        dateFormat: "Y-m-d", // Set the date format
-                      }}
-                      placeholder="Select an option"
-                      className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30  bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700  dark:focus:border-brand-800"
-                    />
-                    <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-                      <CalenderIcon className="size-6" />
-                    </span>
-                  </div>
-                </div>
                 <div className="col-span-2 lg:col-span-1">
                   <Label>Gender</Label>
                   <div className="flex flex-wrap items-center gap-8">
@@ -199,20 +189,6 @@ export default function AddEmployeeCard() {
                   />
                 </div>
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Employment Type</Label>
-                  <select
-                    value={formData.employementType}
-                    name="employementType"
-                    onChange={(e) => handleEditChange(e)}
-                    className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:focus:border-brand-800"
-                  >
-                    <option value="Full Time">Full Time</option>
-                    <option value="Part Time">Part Time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Internship">Internship</option>
-                  </select>
-                </div>
-                <div className="col-span-2 lg:col-span-1">
                   <Label>Joined Date</Label>
                   <div className="relative w-full flatpickr-wrapper">
                     <Flatpickr
@@ -231,59 +207,18 @@ export default function AddEmployeeCard() {
                 </div>
               </div>
             </div>
-            <div>
-              <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                Social Links
-              </h5>
-
-              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                <div>
-                  <Label>Facebook</Label>
-                  <Input
-                    type="text"
-                    value={formData.facebook}
-                    name="facebook"
-                    onChange={handleEditChange}
-                  />
-                </div>
-
-                <div>
-                  <Label>X.com</Label>
-                  <Input
-                    type="text"
-                    value={formData.xcom}
-                    name="xcom"
-                    onChange={handleEditChange}
-                  />
-                </div>
-
-                <div>
-                  <Label>Linkedin</Label>
-                  <Input
-                    type="text"
-                    value={formData.linkedin}
-                    name="linkedin"
-                    onChange={handleEditChange}
-                  />
-                </div>
-
-                <div>
-                  <Label>Instagram</Label>
-                  <Input
-                    type="text"
-                    value={formData.instagram}
-                    name="instagram"
-                    onChange={handleEditChange}
-                  />
-                </div>
-              </div>
-            </div>
           </div>
+          {/* Error message */}
+          {error && (
+            <div className="px-4 py-2 text-sm text-red-600 bg-red-100 rounded-md">
+              {error}
+            </div>
+          )}
           <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
             <Button size="sm" variant="outline" onClick={() => setFormData(emptyEmployee)}>
               Clear
             </Button>
-            <Button size="sm" onClick={handleSave}>Save Changes</Button>
+            <Button size="sm" onClick={handleSave} disabled={loading}>Save Changes</Button>
           </div>
           </div>
       </div>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
     Table,
     TableBody,
@@ -6,6 +7,7 @@ import {
     TableRow,
   } from "../ui/table";
   import Badge from "../ui/badge/Badge";
+import { getRecentDocumentRequests } from "../../services/dashboardService";
   
   // Define the TypeScript interface for the table rows
   interface DocRequest {
@@ -30,6 +32,27 @@ import {
   ];
   
   export default function PendingDocuments() {
+    const [documents, setDocuments] = useState<DocRequest[]>([]);
+
+    useEffect(() => {
+      getRecentDocumentRequests()
+        .then((res) => {
+          const mapped = res.map((item: any) => ({
+            id: item.id,
+            employeeName: item.user.profile.firstName + " " + item.user.profile.lastName,
+            subject: item.subject,
+            requestDate: new Date(item.requestedDate),
+            employeeImage: item.user.image,
+            status: item.status === "DELIVERED"
+              ? "Delivered"
+              : item.status === "PENDING"
+              ? "Pending"
+              : "Canceled",
+          }));
+          setDocuments(mapped);
+        })
+        .catch(console.error);
+    }, []);
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
         <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -68,11 +91,11 @@ import {
             {/* Table Body */}
   
             <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {tableData.map((document) => (
+              {documents.map((document) => (
                 <TableRow key={document.id} className="">
                   <TableCell className="py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-[50px] w-[50px] overflow-hidden rounded-md">
+                      <div className="h-[50px] w-[50px] overflow-hidden rounded-full">
                         <img
                           src={document.employeeImage}
                           className="h-[50px] w-[50px]"
@@ -108,6 +131,13 @@ import {
                   </TableCell>
                 </TableRow>
               ))}
+              {documents.length === 0 && (
+                <TableRow>
+                  <TableCell className="py-3 text-center text-gray-500">
+                    No recent document requests
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

@@ -9,49 +9,67 @@ import { Modal } from "../ui/modal";
 import { useModal } from "../../hooks/useModal";
 
 import Badge from "../ui/badge/Badge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../ui/button/Button";
-import DropDocumentZone from "./DropDocumentDone";
+import DropDocumentZone from "./DropDocumentZone";
+import { getAllDocumentRequests, updateDocumentStatus } from "../../services/documentService";
 
-interface DocumentRequest {
-  id: number;
-  employeeName: string;
-  employeeImage: string;
-  createdAt: Date;
-  type: string;
-  reason: string;
-  addressTo: string;
-  note?: string;
-  status: "Delivered" | "Pending" | "Canceled" | "Rejected";
-}
-
-// Define the table data using the interface
-const tableData: DocumentRequest[] = [
-  {
-    id: 1,
-    employeeName: "Lindsey Curtis",
-    employeeImage: "/images/user/user-17.jpg",
-    createdAt: new Date("2025-03-01"),
-    type: "Job Confirmation",
-    reason: "to Apply for a loan",
-    addressTo: "DFCC Bank",
-    status: "Pending",
-  },
-];
 
 export default function DocRequestTable() {
-  const [selectedRequest, setSelectedRequest] = useState<DocumentRequest | null>(null);
+  const [documentList, setDocumentList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<string>("");
+
   const { isOpen, openModal, closeModal } = useModal();
 
+  useEffect(() => {
+    getAllDocumentRequests()
+      .then((res) => {
+        setDocumentList(res);
+      })
+      .catch(console.error)
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (selectedRequest) {
+      setStatus(selectedRequest.status);
+      setUploadedFile(null);
+    }
+  }, [selectedRequest]);
+
   const openRequestModal = (key: number) => {
-    setSelectedRequest(tableData[key]);
+    setSelectedRequest(documentList[key]);
     openModal();
   };
 
-  const handleSave = () => {
-    closeModal();
+
+  const handleSave = async() => {
+    if (!selectedRequest) return;
+    await updateDocumentStatus(
+      selectedRequest.id,
+      status,
+      uploadedFile as File
+    );
+    getAllDocumentRequests()
+    .then((res) => {
+      setDocumentList(res);
+    })
+    .catch(console.error)
+    .finally(() => {
+      alert("Document Request Updated");
+      setSelectedRequest(null);
+      setUploadedFile(null);
+      setStatus("");
+      closeModal();
+    });
   };
 
+  if (loading) return <p>Loading...</p>;
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -94,7 +112,7 @@ export default function DocRequestTable() {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {tableData.map((request, key) => (
+            {documentList.map((request:any, key) => (
               <TableRow key={request.id}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
@@ -102,19 +120,19 @@ export default function DocRequestTable() {
                       <img
                         width={40}
                         height={40}
-                        src={request.employeeImage}
-                        alt={request.employeeName}
+                        src={request.user.image}
+                        alt={request.user.profile.firstName}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {request.employeeName}
+                        {request.user.profile.firstName} {request.user.profile.lastName}
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {new Date(request.createdAt).toLocaleDateString()}
+                  {new Date(request.requestedDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {request.type}
@@ -123,16 +141,16 @@ export default function DocRequestTable() {
                   <Badge
                     size="sm"
                     color={
-                      request.status === "Delivered"
+                      request.status === "DELIVERED"
                         ? "success"
-                        : request.status === "Pending"
+                        : request.status === "PENDING"
                         ? "warning"
-                        : request.status === "Canceled"
+                        : request.status === "CANCELLED"
                         ? "light"
                         : "error"
                     }
                   >
-                    {request.status}
+                    {request.status.toLowerCase().capitalize()}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
@@ -174,23 +192,23 @@ export default function DocRequestTable() {
     <div className="flex items-center gap-4 mb-6">
       <div className="w-16 h-16 overflow-hidden rounded-full">
         <img
-          src={selectedRequest?.employeeImage}
-          alt={selectedRequest?.employeeName}
+          src={selectedRequest?.user.image}
+          alt={selectedRequest?.user.profile.firstName}
           className="w-full h-full object-cover"
         />
       </div>
       <div>
         <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          {selectedRequest?.employeeName}
+          {selectedRequest?.user.profile.firstName} {selectedRequest?.user.profile.lastName}
         </h4>
         <Badge
           size="sm"
           color={
-            selectedRequest?.status === "Delivered"
+            selectedRequest?.status === "DELIVERED"
               ? "success"
-              : selectedRequest?.status === "Pending"
+              : selectedRequest?.status === "PENDING"
               ? "warning"
-              : selectedRequest?.status === "Canceled"
+              : selectedRequest?.status === "CANCELLED"
               ? "light"
               : "error"
           }
@@ -209,23 +227,13 @@ export default function DocRequestTable() {
       <div className="space-y-1">
         <p className="text-sm text-gray-500 dark:text-gray-400">Date Requested</p>
         <p className="font-medium dark:text-white">
-          {selectedRequest?.createdAt.toLocaleDateString()}
+          {new Date(selectedRequest?.requestedDate).toLocaleDateString()}
         </p>
-      </div>
-      <div className="space-y-1">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Address To</p>
-        <p className="font-medium dark:text-white">{selectedRequest?.addressTo}</p>
       </div>
       <div className="space-y-1">
         <p className="text-sm text-gray-500 dark:text-gray-400">Reason</p>
         <p className="font-medium dark:text-white">{selectedRequest?.reason}</p>
       </div>
-      {selectedRequest?.note && (
-        <div className="col-span-2 space-y-1">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Additional Notes</p>
-          <p className="font-medium dark:text-white">{selectedRequest?.note}</p>
-        </div>
-      )}
     </div>
 
     {/* Divider */}
@@ -241,23 +249,32 @@ export default function DocRequestTable() {
         defaultValue={selectedRequest?.status}
         onChange={(e) => {
           if (selectedRequest) {
-            setSelectedRequest({ ...selectedRequest, status: e.target.value as DocumentRequest["status"] });
+            setStatus(e.target.value);
           }
         }}
       >
-        <option value="Pending">Pending</option>
-        <option value="Delivered">Delivered</option>
-        <option value="Rejected">Rejected</option>
-        <option value="Canceled">Canceled</option>
+        <option value="PENDING">Pending</option>
+        <option value="DELIVERED">Delivered</option>
+        <option value="PROCESSING">Processing</option>
+        <option value="CANCELLED">Cancelled</option>
       </select>
     </div>
 
     {/* File Upload */}
     <div className="mb-6 space-y-1">
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-        Generated Document
+        Generated Document {selectedRequest?.softCopyUrl && (
+            <a 
+            href={`https://hr-api.harshanasrimal.com${selectedRequest.softCopyUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline text-sm text-blue-500"
+          >
+            (View Current Doc)
+          </a>
+        )}
       </label>
-      <DropDocumentZone onFileSelect={(file) => console.log("Uploaded:", file.name)} />
+      <DropDocumentZone onFileSelect={(file) => setUploadedFile(file)} />
     </div>
   </div>
 

@@ -2,10 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 interface AdminUser {
   id: string;
-  name: string;
   email: string;
   role: string;
   image: string;
+  profile: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 interface AuthContextType {

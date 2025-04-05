@@ -8,37 +8,26 @@ import {
 
 import Badge from "../ui/badge/Badge";
 import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { getAllEmployees } from "../../services/employeeService";
+import Loader from "../common/Loader";
 
-interface Employee {
-  id: number;
-  lName: string;
-  fName: string;
-  nic: string;
-  dob: Date;
-  joinedAt: Date;
-  email: string;
-  image: string;
-  designation: string;
-  status: string;
-}
-
-// Define the table data using the interface
-const tableData: Employee[] = [
-  {
-    id: 1,
-    fName: "Lindsey",
-    lName: "Curtis",
-    nic: "199312345678",
-    dob: new Date("1998-10-07"),
-    joinedAt: new Date("2017-9-07"),
-    image: "/images/user/user-17.jpg",
-    designation: "Web Designer",
-    email: "lindsey@builtapps.com",
-    status: "Active",
-  },
-];
 
 export default function EmployeesTable() {
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAllEmployees()
+      .then(setEmployees)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <Loader/>;
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -62,12 +51,6 @@ export default function EmployeesTable() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Birthday
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
                 Status
               </TableCell>
               <TableCell
@@ -81,7 +64,7 @@ export default function EmployeesTable() {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {tableData.map((employee) => (
+            {employees.map((employee) => (
               <TableRow key={employee.id}>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
@@ -90,15 +73,15 @@ export default function EmployeesTable() {
                         width={40}
                         height={40}
                         src={employee.image}
-                        alt={employee.fName}
+                        alt={employee.profile?.firstName}
                       />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                        {employee.fName} {employee.lName}
+                        {employee.profile.firstName} {employee.profile.lastName}
                       </span>
                       <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                        {employee.designation}
+                        {employee.profile.designation}
                       </span>
                     </div>
                   </div>
@@ -107,18 +90,12 @@ export default function EmployeesTable() {
                   {employee.email}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {new Date(employee.dob).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
-                    color={
-                      employee.status === "Active"
-                        ? "success"
-                        : "error"
+                    color={ employee.isActive ? "success" : "error"
                     }
                   >
-                    {employee.status}
+                    {employee.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
