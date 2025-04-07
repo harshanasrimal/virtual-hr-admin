@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import SignIn from "./pages/AuthPages/SignIn";
+import NotFound from "./pages/OtherPage/NotFound";
+import SingleEmployee from "./pages/EmployeePages/SingleEmployee";
+import Employees from "./pages/EmployeePages/Employees";
+import AppLayout from "./layout/AppLayout";
+import { ScrollToTop } from "./components/common/ScrollToTop";
+import Home from "./pages/Dashboard/Home";
+import AddEmployee from "./pages/EmployeePages/AddEmployee";
+import Leaves from "./pages/LeavePages/Leaves";
+import DocRequests from "./pages/DocumentPages/DocRequests";
+import PrivateRoute from "./components/PrivateRoute";
+import ComingSoon from "./pages/OtherPage/ComingSoon";
+import SendAnnouncement from "./pages/Announcements/SendAnnouncement";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <Router>
+        <ScrollToTop />
+        <Routes>
+          {/* Dashboard Layout with Auth */}
+          <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
+            <Route index path="/" element={<Home />} />
 
-export default App
+            {/* Employees */}
+            <Route path="/employees" element={<Employees />} />
+            <Route path="/employee/new" element={<AddEmployee />} />
+            <Route path="/employee/:id" element={<SingleEmployee />} />
+
+            {/* Leaves */}
+            <Route path="/leaves" element={<Leaves />} />
+
+            {/* Document Requests */}
+            <Route path="/docs/requests" element={<DocRequests />} />
+            <Route path="/docs/templates" element={<ComingSoon />} />
+
+            {/* reports */}
+            <Route path="/reports/leaves" element={<ComingSoon />} />
+            <Route path="/reports/documents" element={<ComingSoon />} />
+
+            {/* settings */}
+            <Route path="/settings" element={<ComingSoon />} />
+
+            {/* announcements */}
+            <Route path="/announcements" element={<SendAnnouncement />} />
+
+          </Route>
+
+          {/* Auth Layout */}
+          <Route path="/signin" element={<SignIn />} />
+
+          {/* Fallback Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </>
+  );
+}
